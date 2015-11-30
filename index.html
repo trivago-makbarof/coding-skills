@@ -53,6 +53,7 @@
                     <h2>Topics</h2>
                     <ol>
                         <li><a href="?transition=slide#/naming">Naming</a></li>
+                        <li><a href="?transition=slide#/functions">Clean functions</a></li>
                         <li><a href="?transition=slide#/single-responsibility">Single responsibility principle</a></li>
                         <li><a href="?transition=slide#/abstraction">Abstraction</a></li>
                     </ol>
@@ -63,9 +64,8 @@
 						<h1>Naming</h1>
 					</section>
                     <section>
-                        <h2>Let's start with a test:</h2>
+                        <h2>Practice time!</h2>
 						<span>Open src/naming.php and copy it to somewhere else. Try to improve the naming as much as possible.</span>
-                        <span>Then interchange your code with your partner and each try to make the naming of the other even better</span>
                     </section>
 					<section>
 						<h2>Main points</h2>
@@ -78,10 +78,38 @@
 					</section>
 				</section>
 
+
+				<section id="functions">
+					<section>
+                        <h1>Clean functions</h1>
+						<div id="long-function-img"></div>
+                    </section>
+                    <section>
+                        <h2>Why do we need it?</h2>
+                        <ul>
+                            <li>More understandable code</li>
+                            <li>Easier to refactor</li>
+                            <li>Easier to extend the class and rewrite parts</li>
+                        </ul>
+                    </section>
+					<section>
+                        <h2>Practice time!</h2>
+                        <div>Open the file in src/function.php and make some abstraction layer in it</div>
+                    </section>
+				</section>
+
 				<section id="single-responsibility">
 					<section>
                         <h1>Single responsibility principle</h1>
                         <div id="single-responsibility-img"></div>
+                    </section>
+					<section>
+                        <h2>Why do we need it?</h2>
+                        <ul>
+                            <li>Simpler code</li>
+                            <li>Easier to locate a piece of code</li>
+                            <li>Easier to test</li>
+                        </ul>
                     </section>
                     <section>
                         <h2>Same as before! Let's look at some code</h2>
@@ -91,7 +119,7 @@
 
 				<section id="abstraction">
 					<section>
-                        <h1>Abstraction</h1>
+                        <h1>Abstraction & Encapsulation</h1>
                     </section>
                     <section>
                         <h2>Why do we need it?</h2>
@@ -99,6 +127,7 @@
                             <li>Pretty related to SRP</li>
                             <li>Removes lots of if/else or switch cases</li>
                             <li>Allows you not to worry about exact implementation</li>
+							<li>Easily changing a functionality without breaking the code</li>
                         </ul>
                     </section>
                     <section>

@@ -1,7 +1,15 @@
 #single-responsibility-img {
     width: 406px;
     height: 224px;
-    background-size: 537px 429px;
+    background-size: 406px 224px;
     background: url('../img/single-responsibility.png') no-repeat;
+    margin: 0 auto 0 auto;
+}
+
+#long-function-img {
+    width: 806px;
+    height: 400px;
+    background-size: 806px 400px;
+    background: url('../img/long-function.png') no-repeat;
     margin: 0 auto 0 auto;
 }
