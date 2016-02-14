@@ -1,121 +1,129 @@
 <?php
 
-//Moving forwards when in a vehicle position will get you in the vehicle if you're out of it otherwise it takes you out of the vehicle
+// Moving forwards when in a vehicle position will get you in the vehicle
+// if you're out of it otherwise it takes you out of the vehicle
 
 // Just for sake of using a constant!
+
+/* I prefer ValueObject classes instead of that constants and loading the value from a config file :)
+ *
+ * eg:
+ *
+ * $office = new Office(getenv('OFFICE_LOCATION'));
+ * $home = new Home(getenv('HOME_LOCATION'));
+ */
 define('OFFICE_POSITION', 20);
 define('HOME_POSITION', 0);
 
-class Person
+/**
+ * Interface Location
+ */
+interface Location
 {
-    /** @var Leg */
-    private $leftLeg;
-    /** @var Leg */
-    private $rightLeg;
-    private $currentForwardLeg = null;
-    /** @var  Brain */
-    private $brain;
-    private $currentPosition;
+    public function getPosition();
+}
 
+/**
+ * Class Home
+ */
+class Home implements Location
+{
+    /**
+     * @var
+     */
+    private $position;
 
-    public function goToOffice(Vehicle $vehicle)
+    /**
+     * @param $position
+     */
+    public function __construct($position)
     {
-        while ($this->currentPosition != $this->brain->locate($vehicle))
-        {
-            if (is_null($this->currentForwardLeg))
-            {
-                $this->rightLeg->moveForward();
-                $this->currentForwardLeg = $this->rightLeg;
-                $this->currentPosition++;
-                break;
-            }
-            elseif ($this->currentForwardLeg === $this->rightLeg)
-            {
-                $this->leftLeg->moveForward();
-                $this->currentForwardLeg = $this->leftLeg;
-                $this->currentPosition++;
-                break;
-            }
-            else
-            {
-                $this->rightLeg->moveForward();
-                $this->currentForwardLeg = $this->rightLeg;
-                $this->currentPosition++;
-                break;
-            }
-        }
-
-        //Now we can get in to the vehicle
-        if ($vehicle instanceof VehicleWithDoor)
-        {
-            $vehicle->openDoor();
-        }
-
-        //This is supposedly takes us in the vehicle
-        //We already know the $this->currentForwardLeg is not null
-        if ($this->currentForwardLeg === $this->rightLeg)
-        {
-            $this->leftLeg->moveForward();
-            $this->currentForwardLeg = $this->leftLeg;
-            $this->currentPosition++;
-        }
-        else
-        {
-            $this->rightLeg->moveForward();
-            $this->currentForwardLeg = $this->rightLeg;
-            $this->currentPosition++;
-        }
-
-        if ($vehicle instanceof VehicleWithDoor)
-        {
-            $vehicle->closeDoor();
-        }
-
-        $vehicle->driveTo(OFFICE_POSITION, function(Vehicle $vehicle, $position){
-            $this->currentPosition = $position;
-
-            //Now we can get in to the vehicle
-            if ($vehicle instanceof VehicleWithDoor)
-            {
-                $vehicle->openDoor();
-            }
-
-            //Go out of the vehicle
-            if ($this->currentForwardLeg === $this->rightLeg)
-            {
-                $this->leftLeg->moveForward();
-                $this->currentForwardLeg = $this->leftLeg;
-                $this->currentPosition++;
-            }
-            else
-            {
-                $this->rightLeg->moveForward();
-                $this->currentForwardLeg = $this->rightLeg;
-                $this->currentPosition++;
-            }
-        });
+        $this->position = $position;
     }
 
-    public function goToHome(Vehicle $vehicle)
+    /**
+     * @return mixed
+     */
+    public function getPosition()
     {
-        while ($this->currentPosition != $this->brain->locate($vehicle))
-        {
-            if (is_null($this->currentForwardLeg))
-            {
+        return $this->position;
+    }
+}
+
+/**
+ * Class Office
+ */
+class Office implements Location
+{
+    /**
+     * @var
+     */
+    private $position;
+
+    /**
+     * @param $position
+     */
+    public function __construct($position)
+    {
+        $this->position = $position;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+}
+
+/**
+ * Class Person
+ */
+class Person
+{
+    /**
+     * @var
+     */
+    private $leftLeg;
+
+    /**
+     * @var
+     */
+    private $rightLeg;
+
+    /**
+     * @var null
+     */
+    private $currentForwardLeg = null;
+
+    /**
+     * @var
+     */
+    private $brain;
+
+    /**
+     * @var
+     */
+    private $currentPosition;
+
+    /**
+     * @param Vehicle $vehicle
+     */
+    private function goToVehicle(Vehicle $vehicle)
+    {
+        while ($this->currentPosition != $this->brain->locate($vehicle)) {
+            if (is_null($this->currentForwardLeg)) {
                 $this->rightLeg->moveForward();
                 $this->currentForwardLeg = $this->rightLeg;
                 $this->currentPosition++;
                 break;
-            }
-            elseif ($this->currentForwardLeg === $this->rightLeg)
-            {
+            } elseif ($this->currentForwardLeg === $this->rightLeg) {
                 $this->leftLeg->moveForward();
                 $this->currentForwardLeg = $this->leftLeg;
                 $this->currentPosition++;
                 break;
-            }
-            else
-            {
+            } else {
                 $this->rightLeg->moveForward();
                 $this->currentForwardLeg = $this->rightLeg;
                 $this->currentPosition++;
@@ -123,73 +131,94 @@ class Person
             }
         }
 
-        //Now we can get in to the vehicle
-        if ($vehicle instanceof VehicleWithDoor)
-        {
+    }
+
+    /**
+     * @param Vehicle $vehicle
+     */
+    private function openVehicleDoor(Vehicle &$vehicle)
+    {
+        if ($vehicle instanceof VehicleWithDoor) {
             $vehicle->openDoor();
         }
+    }
 
-        //This is supposedly takes us in the vehicle
-        //We already know the $this->currentForwardLeg is not null
-        if ($this->currentForwardLeg === $this->rightLeg)
-        {
+    /**
+     * @param Vehicle $vehicle
+     */
+    private function closeVehicleDoor(Vehicle &$vehicle)
+    {
+        if ($vehicle instanceof VehicleWithDoor) {
+            $vehicle->closeDoor();
+        }
+    }
+
+    /**
+     * @param Vehicle $vehicle
+     */
+    public function getOnVehicle(Vehicle &$vehicle)
+    {
+        $this->openVehicleDoor($vehicle);
+
+        if ($this->currentForwardLeg === $this->rightLeg) {
             $this->leftLeg->moveForward();
             $this->currentForwardLeg = $this->leftLeg;
             $this->currentPosition++;
-        }
-        else
-        {
+        } else {
             $this->rightLeg->moveForward();
             $this->currentForwardLeg = $this->rightLeg;
             $this->currentPosition++;
         }
 
-        if ($vehicle instanceof VehicleWithDoor)
-        {
-            $vehicle->closeDoor();
-        }
+        $this->closeVehicleDoor($vehicle);
+    }
 
-        $vehicle->driveTo(HOME_POSITION, function(Vehicle $vehicle, $position){
+    /**
+     * @param Vehicle $vehicle
+     * @param Location $location
+     */
+    public function goToLocation(Vehicle $vehicle, Location $location)
+    {
+        $this->goToVehicle($vehicle);
+
+        $this->getOnVehicle($vehicle);
+
+        $vehicle->driveTo($location->getPosition(), function(Vehicle $vehicle, $position) {
+
             $this->currentPosition = $position;
 
-            //Now we can get in to the vehicle
-            if ($vehicle instanceof VehicleWithDoor)
-            {
-                $vehicle->openDoor();
-            }
-
-            //Go out of the vehicle
-            if ($this->currentForwardLeg === $this->rightLeg)
-            {
-                $this->leftLeg->moveForward();
-                $this->currentForwardLeg = $this->leftLeg;
-                $this->currentPosition++;
-            }
-            else
-            {
-                $this->rightLeg->moveForward();
-                $this->currentForwardLeg = $this->rightLeg;
-                $this->currentPosition++;
-            }
+            $this->getOnVehicle($vehicle);
         });
     }
 }
 
+/**
+ * Interface Brain
+ */
 interface Brain
 {
     public function locate(Thing $thing);
 }
 
+/**
+ * Interface Leg
+ */
 interface Leg
 {
     public function moveForward();
 }
 
+/**
+ * Interface Thing
+ */
 interface Thing
 {
 
 }
 
+/**
+ * Interface VehicleWithDoor
+ */
 interface VehicleWithDoor extends Vehicle
 {
     public function openDoor();
@@ -197,6 +226,9 @@ interface VehicleWithDoor extends Vehicle
     public function closeDoor();
 }
 
+/**
+ * Interface Vehicle
+ */
 interface Vehicle extends Thing
 {
     public function driveTo($destination, $callback);
